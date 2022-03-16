@@ -1,24 +1,36 @@
 from random import randrange
 from random import uniform
 from colorama import Fore, Back, Style
+from numpy import diff
 
 #difficulty menu ?
 #multiple ends with dialogue
 #place of power
 #handle keypad
 
-#you are about to fight a powerful enemy, there is no going back. Proceed ?
-
 class Player:
-    def __init__(self, life, attack, defense, objects, level, posy, posx):
+    def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
         self.attack = attack # *0.5 on all the player attacks 
         self.defense = defense # /0.5 all enemy attacks
         self.objects = objects #user objects
         self.level = level
+        self.xp = xp
         self.posy = posy
         self.posx = posx
-        
+
+    def winfight(self, coefficient):
+        if self.level*10 <= self.xp: #raise level
+            difference = self.level*10-self.xp
+            self.level +=1
+            self.xp = 0
+            self.life+=5
+            self.attack+=1
+            self.defense+=1
+
+        self.xp *= coefficient/10
+        if difference:
+            self.xp += difference
 class Sbire:
     def __init__(self, life, attack, defense, level):
         self.life = life
@@ -43,7 +55,7 @@ class Object:
 #useful game data 
 map = [["X"]*8 for i in range(8)]
 playerposy = int(randrange(0,7))
-player = Player(20,4,2,[["Epee en bois","offensive",4]],1,int(randrange(0,7)),int(randrange(0,7)))
+player = Player(20,4,2,[["Epee en bois","offensive",4]],1,0,int(randrange(0,7)),int(randrange(0,7)))
 boss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
 
 def main(): #menu handler
@@ -62,11 +74,10 @@ def main(): #menu handler
         exit()
     main()
 
-def creategame(): #game loop
+def creategame():
     username = str(input("Enter your username:\n"))
     print("Good luck" ,username,"! Remember you can type 'exit' to quit the game :)\n")
     createmap()
-
     game()
 
 def game():
@@ -75,18 +86,33 @@ def game():
         print("\n")
         direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
         exit(input) 
-        err, event = move(direction)
+        err, event,direction = move(direction)
         if err != "":
             print(err,"\n")
             pass
-        eventhandler(event)
+        eventhandler(event,direction)
+    print("You lost, Try again ?\n")
 
-def eventhandler(event): #handles the event depending on the position he is on
+def eventhandler(event,direction): #handles the event depending on the position he is on
     print(event)
     if event == "X":
         return
     if event == "S":
         return fight()
+    if event == "B":
+        answer = input("You are about to fight a powerful enemy, there is no going back. Proceed ? (y or n)")
+        if answer == "" or answer == "y" or answer == "Y" or answer == "yes":
+            return fight()
+        map[player.posy][player.posx] = "B" #put the boss back on the map
+        if direction == "W" or direction == "w": #player move backward
+            move("E")
+        if direction == "E" or direction == "e":
+            move("W")
+        if direction == "N" or direction == "n":
+            move("S")
+        if direction == "S" or direction == "s":
+            move("N")
+        return game()
 
 def fight():
     print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
@@ -113,34 +139,34 @@ def move(direction):
             map[player.posy][player.posx-1] = "X" #update old pos
             player.posx -=1
             map[player.posy][player.posx] = "P" #update new pos
-            return "",event
+            return "",event,direction
     if direction == "N" or direction == "n" :
         if player.posy > 0:
             event = map[player.posy][player.posx]
             map[player.posy-1][player.posx] = "X"
             player.posy -=1
             map[player.posy][player.posx] = "P"
-            return "",event
+            return "",event,direction
     if direction == "E" or direction == "e" :
         if player.posx < 7:
             event = map[player.posy][player.posx+1]
             map[player.posy][player.posx] = "X"
             player.posx +=1
             map[player.posy][player.posx] = "P"
-            return "",event
+            return "",event,direction
     if direction == "S" or direction == "s" :
         if player.posy < 7:
             event = map[player.posy+1][player.posx]
             map[player.posy][player.posx] = "X"
             player.posy +=1
             map[player.posy][player.posx] = "P"
-            return "",event
+            return "",event,direction
     return "You cannot go there !"
         
 
 def createmap(): #handles the creation of the map
     for subplace in range(len(map)):
-        for place in range(subplace):
+        for place in range(len(map)):
             map[subplace][place] = dice()
     map[player.posy][player.posx] = "P"
     map[boss.posy][boss.posx] = "B"
