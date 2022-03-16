@@ -1,9 +1,11 @@
 from random import randrange
-from random import  uniform
+from random import uniform
+from colorama import Fore, Back, Style
 
 #difficulty menu ?
 #multiple ends with dialogue
 #place of power
+#handle keypad
 
 #you are about to fight a powerful enemy, there is no going back. Proceed ?
 
@@ -32,18 +34,17 @@ class Boss:
         self.posx = posx
 
 class Object:
-    def __init__(self, name, attribute, number):
+    def __init__(self, name, attribute, number, durability):
         self.name = name
         self.attribute = attribute #offensive, defensive, heal
         self.number = number
+        self.durability = durability
 
 #useful game data 
 map = [["X"]*8 for i in range(8)]
 playerposy = int(randrange(0,7))
 player = Player(20,4,2,[["Epee en bois","offensive",4]],1,int(randrange(0,7)),int(randrange(0,7)))
 boss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
-enemies = [] #store all the enemies
-objectbank = [] #all the valuable objects in the game 
 
 def main(): #menu handler
     print("MAIN MENU")
@@ -74,42 +75,66 @@ def game():
         print("\n")
         direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
         exit(input) 
-        err = move(direction)
+        err, event = move(direction)
         if err != "":
             print(err,"\n")
             pass
+        eventhandler(event)
+
+def eventhandler(event): #handles the event depending on the position he is on
+    print(event)
+    if event == "X":
+        return
+    if event == "S":
+        return fight()
+
+def fight():
+    print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
+    sbire = createsbire()
+    _ = input()
+    print("You face a sbire with",sbire.life)
+    print("What do you do ?")
+    print("1. Attack")
+    print("2. Heal")
+    action = input()
+    fightaction(action)
+
+def fightaction(action):
+    print("much to do")
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
         main()
 
 def move(direction):
-    print(player.posy,player.posx)
     if direction == "W" or direction == "w" :
         if player.posx > 0:
-            map[player.posy][player.posx] = "X" #update old pos
+            event = map[player.posy][player.posx]
+            map[player.posy][player.posx-1] = "X" #update old pos
             player.posx -=1
             map[player.posy][player.posx] = "P" #update new pos
-            return ""
+            return "",event
     if direction == "N" or direction == "n" :
         if player.posy > 0:
-            print("entre")
-            map[player.posy][player.posx] = "X"
+            event = map[player.posy][player.posx]
+            map[player.posy-1][player.posx] = "X"
             player.posy -=1
             map[player.posy][player.posx] = "P"
-            return ""
+            return "",event
     if direction == "E" or direction == "e" :
         if player.posx < 7:
+            event = map[player.posy][player.posx+1]
             map[player.posy][player.posx] = "X"
             player.posx +=1
             map[player.posy][player.posx] = "P"
-            return ""
+            return "",event
     if direction == "S" or direction == "s" :
         if player.posy < 7:
+            event = map[player.posy+1][player.posx]
             map[player.posy][player.posx] = "X"
             player.posy +=1
             map[player.posy][player.posx] = "P"
-            return ""
+            return "",event
     return "You cannot go there !"
         
 
@@ -123,10 +148,8 @@ def createmap(): #handles the creation of the map
 def dice(): #roll the dice to create the map
     dice = int(randrange(1,10))
     if dice >0 and dice <=4:
-        createsbire()
         return "S"
     if dice >5 and dice <=7:
-        createobject()
         return "O"
     return "X"
 
@@ -135,20 +158,23 @@ def createsbire(): #creates a sbire
     attack = uniform(0.1,0.5)
     defense = uniform(0.1,0.5)
     sbire = Sbire(health, attack, defense,1)
-    enemies.append(sbire)
+    return sbire
 
 def createobject(): #creates an object
-    name = ""
     type = int(randrange(0,2))
     if type ==0:
+        rand = int(randrange(1,10))
+        itemsname = ["Silver Sword", "Ray Gun", "Katana", ""]
+        name = itemsname[rand]
+        itemsname.pop(rand)
         attribute="offensive"
     if type ==1:
         attribute="defensive"
     if type ==2:
         attribute="heal"
     number = int(randrange(2,8))
-    object = Object(name, attribute, number)
-    objectbank.append(object)
+    object = Object(name, attribute, number, 10)
+    return object
 
 if __name__ == "__main__":
     main()
