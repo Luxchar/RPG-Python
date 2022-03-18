@@ -1,5 +1,4 @@
-from random import randrange
-from random import uniform
+from random import randrange, uniform
 from colorama import Fore, Back, Style
 from numpy import diff
 
@@ -98,23 +97,23 @@ def eventhandler(event,direction): #handles the event depending on the position 
     if event == "X":
         return
     if event == "S":
-        return fight()
+        return fightsbire()
     if event == "B":
-        answer = input("You are about to fight a powerful enemy, there is no going back. Proceed ? (y or n)")
-        if answer == "" or answer == "y" or answer == "Y" or answer == "yes":
-            return fight()
-        map[player.posy][player.posx] = "B" #put the boss back on the map
-        if direction == "W" or direction == "w": #player move backward
-            move("E")
-        if direction == "E" or direction == "e":
-            move("W")
-        if direction == "N" or direction == "n":
-            move("S")
-        if direction == "S" or direction == "s":
-            move("N")
         return game()
 
-def fight():
+def confirmboss(event):
+    if event == "B":
+        answer = input("You are about to fight a powerful enemy, there is no going back. Proceed ? (y or n)\n")
+        if answer == "" or answer == "y" or answer == "Y" or answer == "yes":
+            pass
+        else:
+            print("Alright, going back to last movement\n")
+            return
+
+def fightboss():
+    print("t")
+
+def fightsbire():
     print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
     sbire = createsbire()
     _ = input()
@@ -123,10 +122,6 @@ def fight():
     print("1. Attack")
     print("2. Heal")
     action = input()
-    fightaction(action)
-
-def fightaction(action):
-    print("much to do")
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
@@ -135,21 +130,24 @@ def exit(input): #gets an input and exit the program if the user wants to
 def move(direction):
     if direction == "W" or direction == "w" :
         if player.posx > 0:
-            event = map[player.posy][player.posx]
-            map[player.posy][player.posx-1] = "X" #update old pos
+            event = map[player.posy][player.posx-1]
+            confirmboss(event)
+            map[player.posy][player.posx] = "X" #update old pos
             player.posx -=1
             map[player.posy][player.posx] = "P" #update new pos
             return "",event,direction
     if direction == "N" or direction == "n" :
         if player.posy > 0:
-            event = map[player.posy][player.posx]
-            map[player.posy-1][player.posx] = "X"
+            event = map[player.posy-1][player.posx]
+            confirmboss(event)
+            map[player.posy][player.posx] = "X"
             player.posy -=1
             map[player.posy][player.posx] = "P"
             return "",event,direction
     if direction == "E" or direction == "e" :
         if player.posx < 7:
             event = map[player.posy][player.posx+1]
+            confirmboss(event)
             map[player.posy][player.posx] = "X"
             player.posx +=1
             map[player.posy][player.posx] = "P"
@@ -157,6 +155,7 @@ def move(direction):
     if direction == "S" or direction == "s" :
         if player.posy < 7:
             event = map[player.posy+1][player.posx]
+            confirmboss(event)
             map[player.posy][player.posx] = "X"
             player.posy +=1
             map[player.posy][player.posx] = "P"
