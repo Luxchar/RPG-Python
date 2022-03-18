@@ -35,6 +35,7 @@ class Sbire:
         self.life = life
         self.attack = attack
         self.defense = defense
+        self.level = level
     
 class Boss:
     def __init__(self, life, attack, defense, posy, posx):
@@ -121,7 +122,12 @@ def fightsbire():
     print("What do you do ?")
     print("1. Attack")
     print("2. Heal")
-    action = input()
+    action = str(input())
+    if action == "1" or action == "Attack":
+        for i in range(len(player.object)):
+            for j in range(2):
+                if player.objects[i][j] == "offensive":
+                    print(player.objects[i][j])
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
