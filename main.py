@@ -7,6 +7,10 @@ from numpy import diff
 #place of power
 #handle keypad
 
+#boss
+#objects
+#xp
+#save
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
@@ -118,7 +122,7 @@ def fightsbire():
     print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
     sbire = createsbire()
     _ = input()
-    while player.life > 0 or sbire.life > 0:
+    while player.life > 0 and sbire.life > 0:
         print("You have",player.life," health. You face a sbire with",sbire.life, "HP")
         print("What do you do ?")
         print("1. Attack")
@@ -138,8 +142,8 @@ def fightsbire():
             player.objects[action][3] -= 1 #durability update
             
             player.life -= sbire.attack #sbire response
-
-    print(Fore.WHITE + "You won ! you earned x amount of experience")
+    if player.life > 0:
+        print(Fore.WHITE + "You won ! you earned x amount of experience")
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
@@ -150,7 +154,7 @@ def move(direction):
         if player.posx > 0:
             event = map[player.posy][player.posx-1]
             if confirmboss(event) != "":
-                return 
+                return "","",""
             map[player.posy][player.posx] = "X" #update old pos
             player.posx -=1
             map[player.posy][player.posx] = "P" #update new pos
@@ -159,7 +163,7 @@ def move(direction):
         if player.posy > 0:
             event = map[player.posy-1][player.posx]
             if confirmboss(event) != "":
-                return
+                return "","",""
             map[player.posy][player.posx] = "X"
             player.posy -=1
             map[player.posy][player.posx] = "P"
@@ -168,7 +172,7 @@ def move(direction):
         if player.posx < 7:
             event = map[player.posy][player.posx+1]
             if confirmboss(event) != "":
-                return
+                return "","",""
             map[player.posy][player.posx] = "X"
             player.posx +=1
             map[player.posy][player.posx] = "P"
@@ -177,7 +181,7 @@ def move(direction):
         if player.posy < 7:
             event = map[player.posy+1][player.posx]
             if confirmboss(event) != "":
-                return
+                return "","",""
             map[player.posy][player.posx] = "X"
             player.posy +=1
             map[player.posy][player.posx] = "P"
@@ -202,7 +206,7 @@ def dice(): #roll the dice to create the map
 
 def createsbire(): #creates a sbire
     health = int(randrange(10,20))
-    attack = uniform(2,4)
+    attack = int(randrange(2,4))
     defense = uniform(0.1,0.5)
     sbire = Sbire(health, attack, defense,1)
     return sbire
