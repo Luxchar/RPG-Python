@@ -55,7 +55,7 @@ class Object:
 #useful game data 
 map = [["X"]*8 for i in range(8)]
 playerposy = int(randrange(0,7))
-player = Player(20,4,2,[["Epee en bois","offensive",4]],1,0,int(randrange(0,7)),int(randrange(0,7)))
+player = Player(20,4,2,[["Punch","offensive",4,999],["Epee en bois","offensive",6,20]],1,0,int(randrange(0,7)),int(randrange(0,7)))
 boss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
 
 def main(): #menu handler
@@ -105,10 +105,11 @@ def confirmboss(event):
     if event == "B":
         answer = input("You are about to fight a powerful enemy, there is no going back. Proceed ? (y or n)\n")
         if answer == "" or answer == "y" or answer == "Y" or answer == "yes":
-            pass
+            return ""
         else:
             print("Alright, going back to last movement\n")
-            return
+            return "err"
+    return ""
 
 def fightboss():
     print("t")
@@ -117,17 +118,28 @@ def fightsbire():
     print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
     sbire = createsbire()
     _ = input()
-    print("You face a sbire with",sbire.life)
-    print("What do you do ?")
-    print("1. Attack")
-    print("2. Heal")
-    action = str(input())
-    if action == "1" or action == "Attack":
-        for i in range(len(player.object)):
-            for j in range(2):
-                if player.objects[i][j] == "offensive":
-                    print(player.objects[i][j])
-    print(Fore.WHITE + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
+    while player.life > 0 or sbire.life > 0:
+        print("You have",player.life," health. You face a sbire with",sbire.life, "HP")
+        print("What do you do ?")
+        print("1. Attack")
+        print("2. Heal")
+        action = str(input())
+        if action == "1" or action == "Attack":
+            print("Choose an object to attack with:")
+            count = 0
+            for i in range(len(player.objects)): #fetch user objects
+                if player.objects[i][1] == "offensive":
+                    count+=1
+                    print(i,": ",player.objects[i],"\n")
+            action = int(input())
+            while player.objects[action][1] != "offensive": #valid choice of weapon
+                action = int(input())
+            sbire.life -= player.objects[action][2] #damage dealt
+            player.objects[action][3] -= 1 #durability update
+            
+            player.life -= sbire.attack #sbire response
+
+    print(Fore.WHITE + "You won ! you earned x amount of experience")
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
@@ -137,7 +149,8 @@ def move(direction):
     if direction == "W" or direction == "w" :
         if player.posx > 0:
             event = map[player.posy][player.posx-1]
-            confirmboss(event)
+            if confirmboss(event) != "":
+                return 
             map[player.posy][player.posx] = "X" #update old pos
             player.posx -=1
             map[player.posy][player.posx] = "P" #update new pos
@@ -145,7 +158,8 @@ def move(direction):
     if direction == "N" or direction == "n" :
         if player.posy > 0:
             event = map[player.posy-1][player.posx]
-            confirmboss(event)
+            if confirmboss(event) != "":
+                return
             map[player.posy][player.posx] = "X"
             player.posy -=1
             map[player.posy][player.posx] = "P"
@@ -153,7 +167,8 @@ def move(direction):
     if direction == "E" or direction == "e" :
         if player.posx < 7:
             event = map[player.posy][player.posx+1]
-            confirmboss(event)
+            if confirmboss(event) != "":
+                return
             map[player.posy][player.posx] = "X"
             player.posx +=1
             map[player.posy][player.posx] = "P"
@@ -161,7 +176,8 @@ def move(direction):
     if direction == "S" or direction == "s" :
         if player.posy < 7:
             event = map[player.posy+1][player.posx]
-            confirmboss(event)
+            if confirmboss(event) != "":
+                return
             map[player.posy][player.posx] = "X"
             player.posy +=1
             map[player.posy][player.posx] = "P"
@@ -186,7 +202,7 @@ def dice(): #roll the dice to create the map
 
 def createsbire(): #creates a sbire
     health = int(randrange(10,20))
-    attack = uniform(0.1,0.5)
+    attack = uniform(2,4)
     defense = uniform(0.1,0.5)
     sbire = Sbire(health, attack, defense,1)
     return sbire
