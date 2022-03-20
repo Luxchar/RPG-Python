@@ -88,8 +88,7 @@ def game():
         exit(input) 
         err, event,direction = move(direction)
         if err != "":
-            print(err,"\n")
-            pass
+            continue
         eventhandler(event,direction)
     print("You lost, Try again ?\n")
 
@@ -128,6 +127,7 @@ def fightsbire():
             for j in range(2):
                 if player.objects[i][j] == "offensive":
                     print(player.objects[i][j])
+    print(Fore.WHITE + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
 
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
@@ -166,7 +166,7 @@ def move(direction):
             player.posy +=1
             map[player.posy][player.posx] = "P"
             return "",event,direction
-    return "You cannot go there !"
+    return "error wrong key or cant access the direction","",""
         
 
 def createmap(): #handles the creation of the map
