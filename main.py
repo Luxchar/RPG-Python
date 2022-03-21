@@ -2,13 +2,17 @@ from random import randrange, uniform
 from colorama import Fore, Back, Style
 from numpy import diff
 
+from fight import *
 #difficulty menu ?
 #multiple ends with dialogue
 #place of power
 #handle keypad
 #save
+#key for door to the boss
 
-#attack/object menu buggy when wrong key+ when empty ??
+#when wrong key exits ??
+#no object, go back
+#main menu exit doesnt work
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
@@ -46,13 +50,6 @@ class Boss:
         self.posy = posy
         self.posx = posx
 
-class Object:
-    def __init__(self, name, attribute, number, durability):
-        self.name = name
-        self.attribute = attribute #offensive, defensive, heal
-        self.number = number
-        self.durability = durability
-
 #useful game data 
 map = [["X"]*8 for i in range(8)]
 playerposy = int(randrange(0,7))
@@ -69,7 +66,7 @@ def main(): #menu handler
     if choice == "1" or choice =="Start Game" or choice =="start":
         creategame()
     if choice == "3" or choice == "About":
-        print("Hope you enjoyed playing, you can head to my github to see other projects i made https://github.com/Luxchar")
+        print("Hope you enjoyed playing, you can head to my github to see other projects i made https://github.com/Luxchar\n")
         main()
     if choice == "4":
         exit()
@@ -86,7 +83,7 @@ def game():
         print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in map])) # print the map clearly
         print("\n")
         direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
-        exit(input) 
+        exit(direction) 
         err, event,direction = move(direction)
         if err != "":
             continue
@@ -105,9 +102,10 @@ def eventhandler(event,direction): #handles the event depending on the position 
         print("You got a",player.objects[len(player.objects)-1][0])
         print(player.objects)
     if event == "S":
-        return fightsbire()
+        return fight(createsbire())
     if event == "B":
-        return game()
+        fight(bosss)
+        #return game()
 
 def confirmboss(event):
     if event == "B":
@@ -118,123 +116,6 @@ def confirmboss(event):
             print("Alright, going back to last movement\n")
             return "err"
     return ""
-
-def fightboss():
-    print(Fore.RED + "YOU FACE A POWERFUL ENEMY TYPE ANY KEY TO CONTINUE..")
-    boss = bosss
-    input()
-    while player.life > 0 and boss.life > 0:
-        print("You have",player.life," health. You face the boss with",boss.life, "HP")
-        print("What do you do ?")
-        print("1. Attack")
-        print("2. Object")
-        action = str(input())
-        if action == "1":
-            print("Choose an object to attack with:")
-            for i in range(len(player.objects)): #fetch user objects
-                if player.objects[i][1] == "offensive":
-                    print(i,": ",player.objects[i])
-            action = int(input())
-            print("\n")
-            while player.objects[action][1] != "offensive": #valid choice of weapon
-                action = int(input())
-            boss.life -= player.objects[action][2] #damage dealt
-            player.objects[action][3] -= 1 #durability update
-            
-            player.life -= boss.attack #boss response
-        if action == "2":
-            print("1. Heal")
-            print("2. Defensive")
-            action = str(input())
-            print("Choose an object to attack with:")
-            if action == "1":
-                for i in range(len(player.objects)): #fetch user objects
-                    if player.objects[i][1] == "heal":
-                        print(i,": ",player.objects[i])
-                action = int(input())
-                print("\n")
-                while player.objects[action][1] != "heal": #valid choice of object
-                    action = int(input())
-
-                player.life += player.objects[action][2] #heal
-                player.objects[action].remove()
-
-            if action == "2":
-                for i in range(len(player.objects)): #fetch user objects
-                    if player.objects[i][1] == "heal":
-                        print(i,": ",player.objects[i])
-                action = int(input())
-                print("\n")
-                while player.objects[action][1] != "defensive": #valid choice of object
-                    action = int(input())
-
-                boss.attack /= player.objects[action][2]/10 #defense applied to enemy attack
-                player.objects[action].remove()
-
-    if player.life > 0:
-        print(Fore.WHITE, "You won !")
-
-def fightsbire():
-    print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
-    sbire = createsbire()
-    input()
-    while player.life > 0 and sbire.life > 0:
-        print("You have",player.life," health. You face a sbire with",sbire.life, "HP")
-        print("What do you do ?")
-        print("1. Attack")
-        print("2. Object")
-        action = str(input())
-        if action == "1":
-            print("Choose an object to attack with:")
-            for i in range(len(player.objects)): #fetch user objects
-                if player.objects[i][1] == "offensive":
-                    print(i,": ",player.objects[i])
-            action = int(input())
-            print("\n")
-            while player.objects[action][1] != "offensive": #valid choice of weapon
-                action = int(input())
-            sbire.life -= player.objects[action][2] #damage dealt
-            player.objects[action][3] -= 1 #durability update
-            
-            player.life -= sbire.attack #sbire response
-        if action == "2":
-            print("1. Heal")
-            print("2. Defensive")
-            action = str(input())
-            print("Choose an object to attack with:")
-            if action == "1":
-                for i in range(len(player.objects)): #fetch user objects
-                    if player.objects[i][1] == "heal":
-                        print(i,": ",player.objects[i])
-                action = int(input())
-                print("\n")
-                while player.objects[action][1] != "heal": #valid choice of object
-                    action = int(input())
-
-                player.life += player.objects[action][2] #heal
-                player.objects[action].remove()
-
-            if action == "2":
-                for i in range(len(player.objects)): #fetch user objects
-                    if player.objects[i][1] == "heal":
-                        print(i,": ",player.objects[i])
-                action = int(input())
-                print("\n")
-                while player.objects[action][1] != "defensive": #valid choice of object
-                    action = int(input())
-
-                sbire.attack /= player.objects[action][2]/10 #defense applied to enemy attack
-                player.objects[action].remove()
-
-    if player.life > 0:
-        print(Fore.WHITE, "You won !")
-        result = player.winfight(sbire.level) #update level
-        print(str(result))
-
-
-def exit(input): #gets an input and exit the program if the user wants to
-    if input == "exit" or input == "Exit":
-        main()
 
 def move(direction):
     if direction == "W" or direction == "w" :
