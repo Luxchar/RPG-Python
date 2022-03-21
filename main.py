@@ -6,9 +6,8 @@ from numpy import diff
 #multiple ends with dialogue
 #place of power
 #handle keypad
-
-#boss
 #save
+
 #attack/object menu buggy when wrong key+ when empty ??
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
@@ -58,7 +57,7 @@ class Object:
 map = [["X"]*8 for i in range(8)]
 playerposy = int(randrange(0,7))
 player = Player(20,4,2,[["Punch","offensive",4,999],["Wooden Sword","offensive",10,20]],1,1,int(randrange(0,7)),int(randrange(0,7)))
-boss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
+bosss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
 
 def main(): #menu handler
     print("MAIN MENU")
@@ -83,7 +82,7 @@ def creategame():
     game()
 
 def game():
-    while player.life > 0 or boss.life > 0:   
+    while player.life > 0 or bosss.life > 0:   
         print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in map])) # print the map clearly
         print("\n")
         direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
@@ -92,7 +91,10 @@ def game():
         if err != "":
             continue
         eventhandler(event,direction)
-    print("You lost, Try again ?\n")
+    if bosss.life == 0:
+        print("Nice game, You won !")
+    else:
+        print("You lost, Try again ?\n")
 
 def eventhandler(event,direction): #handles the event depending on the position he is on
     print(event)
@@ -118,19 +120,71 @@ def confirmboss(event):
     return ""
 
 def fightboss():
-    print("t")
+    print(Fore.RED + "YOU FACE A POWERFUL ENEMY TYPE ANY KEY TO CONTINUE..")
+    boss = bosss
+    input()
+    while player.life > 0 and boss.life > 0:
+        print("You have",player.life," health. You face the boss with",boss.life, "HP")
+        print("What do you do ?")
+        print("1. Attack")
+        print("2. Object")
+        action = str(input())
+        if action == "1":
+            print("Choose an object to attack with:")
+            for i in range(len(player.objects)): #fetch user objects
+                if player.objects[i][1] == "offensive":
+                    print(i,": ",player.objects[i])
+            action = int(input())
+            print("\n")
+            while player.objects[action][1] != "offensive": #valid choice of weapon
+                action = int(input())
+            boss.life -= player.objects[action][2] #damage dealt
+            player.objects[action][3] -= 1 #durability update
+            
+            player.life -= boss.attack #boss response
+        if action == "2":
+            print("1. Heal")
+            print("2. Defensive")
+            action = str(input())
+            print("Choose an object to attack with:")
+            if action == "1":
+                for i in range(len(player.objects)): #fetch user objects
+                    if player.objects[i][1] == "heal":
+                        print(i,": ",player.objects[i])
+                action = int(input())
+                print("\n")
+                while player.objects[action][1] != "heal": #valid choice of object
+                    action = int(input())
+
+                player.life += player.objects[action][2] #heal
+                player.objects[action].remove()
+
+            if action == "2":
+                for i in range(len(player.objects)): #fetch user objects
+                    if player.objects[i][1] == "heal":
+                        print(i,": ",player.objects[i])
+                action = int(input())
+                print("\n")
+                while player.objects[action][1] != "defensive": #valid choice of object
+                    action = int(input())
+
+                boss.attack /= player.objects[action][2]/10 #defense applied to enemy attack
+                player.objects[action].remove()
+
+    if player.life > 0:
+        print(Fore.WHITE, "You won !")
 
 def fightsbire():
     print(Fore.RED + "YOU ARE ATTACKED PRESS ANY KEY TO START THE FIGHT..")
     sbire = createsbire()
-    _ = input()
+    input()
     while player.life > 0 and sbire.life > 0:
         print("You have",player.life," health. You face a sbire with",sbire.life, "HP")
         print("What do you do ?")
         print("1. Attack")
         print("2. Object")
         action = str(input())
-        if action == "1" or action == "Attack":
+        if action == "1":
             print("Choose an object to attack with:")
             for i in range(len(player.objects)): #fetch user objects
                 if player.objects[i][1] == "offensive":
@@ -143,12 +197,12 @@ def fightsbire():
             player.objects[action][3] -= 1 #durability update
             
             player.life -= sbire.attack #sbire response
-        if action == "2" or action == "Object":
+        if action == "2":
             print("1. Heal")
             print("2. Defensive")
             action = str(input())
             print("Choose an object to attack with:")
-            if action == "1" or action == "Heal":
+            if action == "1":
                 for i in range(len(player.objects)): #fetch user objects
                     if player.objects[i][1] == "heal":
                         print(i,": ",player.objects[i])
@@ -160,7 +214,7 @@ def fightsbire():
                 player.life += player.objects[action][2] #heal
                 player.objects[action].remove()
 
-            if action == "2" or action == "Defensive":
+            if action == "2":
                 for i in range(len(player.objects)): #fetch user objects
                     if player.objects[i][1] == "heal":
                         print(i,": ",player.objects[i])
@@ -174,7 +228,7 @@ def fightsbire():
 
     if player.life > 0:
         print(Fore.WHITE, "You won !")
-        result = player.winfight(sbire.level*10) #update level
+        result = player.winfight(sbire.level) #update level
         print(str(result))
 
 
@@ -227,7 +281,7 @@ def createmap(): #handles the creation of the map
         for place in range(len(map)):
             map[subplace][place] = dice()
     map[player.posy][player.posx] = "P"
-    map[boss.posy][boss.posx] = "B"
+    map[bosss.posy][bosss.posx] = "B"
 
 def dice(): #roll the dice to create the map
     dice = int(randrange(1,10))
