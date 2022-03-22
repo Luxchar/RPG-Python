@@ -6,7 +6,8 @@ from colorama import Fore, Back, Style
 #handle keypad
 #save
 #key for door to the boss
-#when wrong key exits or do nothing ??
+
+#cant relaunch game after, needs reset func
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
@@ -50,6 +51,12 @@ playerposy = int(randrange(0,7))
 player = Player(20,4,2,[["Punch","offensive",4,999],["Wooden Sword","offensive",10,20]],1,1,int(randrange(0,7)),int(randrange(0,7)))
 bosss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
 
+def gameinit():
+    map = [["X"]*8 for i in range(8)]
+    playerposy = int(randrange(0,7))
+    player = Player(20,4,2,[["Punch","offensive",4,999],["Wooden Sword","offensive",10,20]],1,1,int(randrange(0,7)),int(randrange(0,7)))
+    bosss = Boss(50,8,4,int(randrange(0,7)),int(randrange(0,7)))
+
 def main(): #menu handler
     print("MAIN MENU")
     print("1. Start Game !")
@@ -70,6 +77,7 @@ def main(): #menu handler
 def creategame():
     username = str(input("Enter your username:\n"))
     print("Good luck" ,username,"! Remember you can type 'exit' to quit the game :)\n")
+    gameinit()
     createmap()
     game()
 
@@ -239,15 +247,15 @@ def attackmenu(enemy):
         if player.objects[i][1] == "offensive":
             print(i,": ",player.objects[i])
     print(len(player.objects),": Go back")
-    action = int(input())
+    action = validinput()
     print("\n")
-    while action <=0 or action >= len(player.objects)+1: #valid choice of object ???
+    while int(action) <0 or int(action) >= len(player.objects)+1: #valid choice of object ???
         print("Choose an object to attack with:")
         for i in range(len(player.objects)): #fetch user objects
             if player.objects[i][1] == "offensive":
                 print(i,": ",player.objects[i])
         print(len(player.objects),": Go back")
-        action = int(input())
+        action = validinput()
 
     if action == len(player.objects):
         return fight(enemy)
@@ -261,7 +269,7 @@ def healmenu(enemy): #attack menu in fight
         if player.objects[i][1] == "heal":
             print(i,": ",player.objects[i])
     print(len(player.objects),": Go back")
-    action = int(input())
+    action = validinput()
     print("\n")
     while action <=0 or action >= len(player.objects)+1: #valid choice of object ???
         print("Choose an object to heal with:")
@@ -269,7 +277,7 @@ def healmenu(enemy): #attack menu in fight
             if player.objects[i][1] == "heal":
                 print(i,": ",player.objects[i])
         print(len(player.objects),": Go back")
-        action = int(input())
+        action = validinput()
 
     if action == len(player.objects):
         return fight(enemy)
@@ -284,7 +292,7 @@ def defensemenu(enemy): #defense and health menu in fight
         if player.objects[i][1] == "defensive":
             print(i,": ",player.objects[i])
     print(len(player.objects),": Go back")
-    action = int(input())
+    action = validinput()
     print("\n")
     while action <=0 or action >= len(player.objects)+1: #valid choice of object ???
         print("Choose an object to defend with:")
@@ -292,7 +300,7 @@ def defensemenu(enemy): #defense and health menu in fight
             if player.objects[i][1] == "defensive":
                 print(i,": ",player.objects[i])
         print(len(player.objects),": Go back")
-        action = int(input())
+        action = validinput()
     
     if action == len(player.objects):
         return fight(enemy)
@@ -305,6 +313,15 @@ def defensemenu(enemy): #defense and health menu in fight
 def exit(input): #gets an input and exit the program if the user wants to
     if input == "exit" or input == "Exit":
         main()
+
+def validinput():
+    try:
+        action = int(input())
+    except ValueError:
+        print("Need a number !")
+        return validinput()
+    return action
+
 
 if __name__ == "__main__":
     main()
