@@ -7,7 +7,6 @@ from colorama import Fore, Back, Style
 #save
 #key for door to the boss
 
-#cant relaunch game after, needs reset func
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
@@ -68,7 +67,7 @@ def main(): #menu handler
         creategame()
     if choice == "3" or choice == "About":
         print("\n")
-        print("Hope you enjoyed playing, you can head over to my github to see other projects i made https://github.com/Luxchar\n")
+        print("Hope you enjoyed playing, you can head to my github to see other projects i made https://github.com/Luxchar\n")
         main()
     if choice == "4":
         quit()
