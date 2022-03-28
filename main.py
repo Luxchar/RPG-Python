@@ -68,15 +68,14 @@ def main(): #menu handler
         creategame()
     if choice == "3" or choice == "About":
         print("\n")
-        print("Hope you enjoyed playing, you can head to my github to see other projects i made https://github.com/Luxchar\n")
+        print("Hope you enjoyed playing, you can head over to my github to see other projects i made https://github.com/Luxchar\n")
         main()
     if choice == "4":
         quit()
     main()
 
 def creategame():
-    username = str(input("Enter your username:\n"))
-    print("Good luck" ,username,"! Remember you can type 'exit' to quit the game :)\n")
+    print("Good luck ! Remember you can type 'exit' to quit the game :)\n")
     gameinit()
     createmap()
     game()
@@ -203,7 +202,7 @@ def createobject(): #creates an object
         itemsname.pop(rand)
         object.append("offensive")
     if type == 1:
-        itemsname = ["Shield", "Wall", "Stinky Person"]
+        itemsname = ["Shield", "Wall", "Bodyguard"]
         object.append(itemsname[rand]) #name
         object.append("defensive")
     if type == 2:
