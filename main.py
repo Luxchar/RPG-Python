@@ -43,7 +43,8 @@ def game():
             else:
                 print(Fore.WHITE, "You lost, Try again ?\n")
             return main()
-        print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in settings.map])) # print the map clearly
+        #print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in settings.map])) # print the map clearly
+        printmap()
         print("\n")
         direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
         exit(direction) 
@@ -51,6 +52,27 @@ def game():
         if err != "":
             continue
         movement.eventhandler(event,settings.player,settings.bosss,settings.Sbire)
+
+def printmap():
+    for row in settings.map:
+        for item in row:
+            if item == "P":
+                print(Fore.GREEN, item, end=" ")
+            elif item == "B":
+                print(Fore.RED, item, end=" ")
+            elif item == "S":
+                print(Fore.YELLOW, item, end=" ")
+            elif item == "E":
+                print(Fore.BLUE, item, end=" ")
+            elif item == "O":
+                print(Fore.CYAN, item, end=" ")
+            elif item == "D":
+                print(Fore.WHITE, item, end=" ")
+            elif item == "X":
+                print(Fore.WHITE, item, end=" ")
+            else:
+                print(Fore.WHITE, item, end=" ")
+        print("")
 
 def endgame():
     if settings.player.life <=0 or settings.bosss.life <=0:
