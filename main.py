@@ -72,7 +72,7 @@ def printmap():
                 print(Fore.WHITE, item, end=" ")
             else:
                 print(Fore.WHITE, item, end=" ")
-        print("")
+        print(Fore.WHITE+"")
 
 def endgame():
     if settings.player.life <=0 or settings.bosss.life <=0:
