@@ -5,9 +5,6 @@ from create import createmap, loadgame, savegame
 import movement
 import settings 
 
-#difficulty menu ?
-#key for door to the boss
-
 def main(): #menu handler
     print("MAIN MENU")
     print("1. Start Game !")
