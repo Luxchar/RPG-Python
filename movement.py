@@ -32,6 +32,7 @@ def confirmboss(event):
     return ""
 
 def move(direction):
+    print(direction)
     if direction == "W" or direction == "w" :
         if settings.player.posx > 0:
             event = settings.map[settings.player.posy][settings.player.posx-1]

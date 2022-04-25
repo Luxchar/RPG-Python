@@ -1,15 +1,11 @@
 from random import randrange, uniform
 from colorama import Fore, Back, Style
 
-from create import createmap
+from create import createmap, loadgame, savegame
 import movement
 import settings 
 
 #difficulty menu ?
-#multiple ends with dialogue
-#place of power
-#handle keypad
-#save
 #key for door to the boss
 
 def main(): #menu handler
@@ -21,16 +17,19 @@ def main(): #menu handler
     choice = input("Choose an option:\n")
     if choice == "1" or choice =="Start Game" or choice =="start":
         creategame()
+    if choice == "2":
+        loadgame()
+        game()
     if choice == "3" or choice == "About":
         print("\n")
-        print("Hope you enjoyed playing, you can head over to my github to see other projects i made https://github.com/Luxchar\n")
+        print(f"Hope you enjoyed playing, you can head over to my github to see other projects i made {Fore.BLUE}https://github.com/Luxchar{Fore.WHITE}\n")
         main()
     if choice == "4":
         quit()
     main()
 
 def creategame():
-    print("Good luck ! Remember you can type 'exit' to quit the game :)\n")
+    print(f"Good luck ! Remember you can type {Fore.GREEN}'save'{Fore.WHITE} to save the game and {Fore.RED}'exit'{Fore.WHITE} to quit the game :)\n")
     settings.gameinit()
     createmap()
     game()
@@ -43,11 +42,14 @@ def game():
             else:
                 print(Fore.WHITE, "You lost, Try again ?\n")
             return main()
-        #print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in settings.map])) # print the map clearly
         printmap()
         print("\n")
-        direction = str(input("Type the direction you want to go to (N, S, E, W):\n"))
-        exit(direction) 
+        direction = str(input(f"Type the direction you want to go to ({Fore.GREEN}N{Fore.WHITE}(orth), {Fore.RED}S{Fore.WHITE}(outh), {Fore.YELLOW}E{Fore.WHITE}(ast), {Fore.BLUE}W{Fore.WHITE}(est)):\n"))
+        exit(direction)
+        print(direction)
+        if direction == "save":
+            savegame()
+            break
         err, event,direction = movement.move(direction)
         if err != "":
             continue

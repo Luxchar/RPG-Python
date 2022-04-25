@@ -3,6 +3,7 @@ from random import randrange, uniform
 class Player:
     def __init__(self, life, attack, defense, objects, level, xp, posy, posx):
         self.life = life #health
+        self.lifecap = life #max health
         self.attack = attack # *0.5 on all the player attacks 
         self.defense = defense # /0.5 all enemy attacks
         self.objects = objects #user objects
@@ -16,9 +17,10 @@ class Player:
         if self.level*10 <= self.xp: #raise level
             self.level +=1
             self.xp = 1
-            self.life+=5
+            self.lifecap+=5
             self.attack+=1
             self.defense+=1
+            self.life = self.lifecap
             return "Level up ! You are now level",self.level
 
         return int(self.level*10-self.xp),"XP left before next level up"
