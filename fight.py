@@ -50,6 +50,8 @@ def attackmenu(enemy, player):
         action = int(input())
     enemy.life -= player.objects[action][2] #damage dealt
     player.objects[action][3] -= 1 #durability update
+    if player.objects[action][3] == 0:
+        player.objects.remove(player.objects[action])
 
 def healmenu(enemy, player): #attack menu in fight
     for i in range(len(player.objects)): #fetch user objects
